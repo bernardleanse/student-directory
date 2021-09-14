@@ -28,8 +28,26 @@ def print_footer(list)
   puts "Overall we have #{list.length} students at the accademy"
 end
 
+def create_student_list
+  puts "Enter student name"
+  puts "To stop hit enter twice"
+  student_name = gets.chomp
+  students = Array.new
+  until student_name.empty?
+    students << {name: student_name, cohort: :september}
+    puts "We currently have #{students.length} students"
+    student_name = gets.chomp
+  end
+  return students
+
+end
+
+def append_student_list(list)
+  list.push(create_student_list).flatten!
+end
 # method calls
 
+student_list = create_student_list()
 print_header()
 print_each_name(student_list)
 print_footer(student_list)
