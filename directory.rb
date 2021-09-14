@@ -12,10 +12,25 @@ student_list = [
   "Norman Bates" 
 ]
 
-puts "The students of Villains Accademy"
-puts "------------------------"
+# prints the header
+def print_header
+  puts "The students of Villains Accademy"
+  puts "------------------------"
+end
 
-student_list.each { |student | puts student} 
+# gives every indivudal name given to each students string object in list
+def print_each_name(name_list)
+  name_list.each { |student| puts student}
+end 
 
 # Displaying the total number of students
-puts "Overall we have #{student_list.length} students at the accademy"
+def print_footer(list)
+  puts "Overall we have #{list.length} students at the accademy"
+end
+
+# method calls
+
+print_header()
+print_each_name(student_list)
+print_footer(student_list)
+
