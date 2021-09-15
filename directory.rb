@@ -12,6 +12,8 @@ student_list = [
   {:name => "Norman Bates", :cohort => :september, height: "170cm", birth_country: "" } 
 ]
 
+@students = []
+
 class String
   def is_valid_cohort?
     months = "january february march april may june july august september october november december".split
@@ -50,8 +52,8 @@ def creates_ordered_list(list)
   return ordered_list
 end
 
-def print_each_name(name_list)
-  name_list = creates_ordered_list(name_list)
+def print_students
+  name_list = creates_ordered_list(@students)
   n = 0
    
   while true
@@ -66,29 +68,28 @@ def print_each_name(name_list)
   end
 end
 
-def print_beginning_with_letter(letter, name_list)
+def print_beginning_with_letter(letter)
   unless letter.instance_of? String  
     return "Error: must recieve single letter string" 
   end
 
-  filtered = name_list.select { |student| student[:name][0].downcase == letter }
-  return print_each_name(filtered)
+  filtered = @students.select { |student| student[:name][0].downcase == letter }
+  return print_students(filtered)
 
 end
 
-def print_less_than_n_chars(n, name_list)
-  filtered = name_list.select { |student| student[:name].length < n }
-  return print_each_name(filtered)
+def print_less_than_n_chars(n)
+  filtered = @students.select { |student| student[:name].length < n }
+  return print_students(filtered)
 end
 
 # Displaying the total number of students
-def print_footer(list)
-  puts "Overall we have #{list.length} students at the accademy".center(100)
+def print_footer
+  puts "Overall we have #{@students.length} students at the accademy".center(100)
 end
 
 
-def create_student_list
-  students = Array.new
+def add_students
   
   while true
     puts "Enter student name"
@@ -105,44 +106,52 @@ def create_student_list
 
     student_cohort = "september" if student_cohort.empty?
 
-    students << {name: student_name, cohort: student_cohort.to_sym }
-    puts "We currently have #{students.length} student" if students.length == 1
-    puts "We currently have #{students.length} students" unless students.length == 1
+    @students << {name: student_name, cohort: student_cohort.to_sym }
+    puts "We currently have #{@students.length} student" if @students.length == 1
+    puts "We currently have #{@students.length} students" unless @students.length == 1
     puts "Enter stop when you've finished"
     
   end
-  return students
 
 end
 
 def append_student_list(list)
-  list.push(create_student_list).flatten!
+  @students.push(add_students()).flatten!
 end
 
-def interactive_menu
-  student_list = Array.new
-
-  loop do
+def print_menu
   puts "Select and option: "
   puts "1. Input Students"
   puts "2. List all Students"
   puts "9. Exit"
-    
+end
+
+def show_students
+  print_header()
+  print_students()
+  print_footer()
+end
+
+def process(user_selection)
+  case user_selection
+  when "1"
+    add_students
+  when "2"
+    show_students
+  when "9"
+    exit
+  else
+    "Error, Try Again."
+  end
+end
+
+def interactive_menu
+
+  loop do
+  
+    print_menu()
     user_selection = gets.chomp
-
-
-    case user_selection
-    when "1"
-      student_list = create_student_list
-    when "2"
-      print_header()
-      print_each_name(student_list)
-      print_footer(student_list)
-    when "9"
-      break
-    else
-      "Error, Try Again."
-    end
+    process(user_selection) 
 
   end
 
