@@ -53,6 +53,7 @@ def creates_ordered_list(list)
 end
 
 def print_students
+  return if @students.empty?
   name_list = creates_ordered_list(@students)
   n = 0
    
@@ -124,6 +125,7 @@ def print_menu
   puts "1. Input Students"
   puts "2. List all Students"
   puts "3. Save all Students to csv"
+  puts "4. Load students from csv"
   puts "9. Exit"
 end
 
@@ -141,6 +143,8 @@ def process(user_selection)
     show_students
   when "3"
     save_to_file
+  when "4"
+    load_students_from_file
   when "9"
     exit
   else
@@ -171,7 +175,16 @@ def save_to_file
 
   file.close
 
+end
 
+def load_students_from_file
+  file = File.open("students.csv", "r")
+
+  file.readlines.each do |line|
+    name, cohort = line.chomp.split(', ')
+    @students << { name: name, cohort: cohort.to_sym }
+  end 
+  file.close
 end
 
 # method calls
