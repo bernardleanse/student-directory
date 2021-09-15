@@ -123,6 +123,7 @@ def print_menu
   puts "Select and option: "
   puts "1. Input Students"
   puts "2. List all Students"
+  puts "3. Save all Students to csv"
   puts "9. Exit"
 end
 
@@ -138,6 +139,8 @@ def process(user_selection)
     add_students
   when "2"
     show_students
+  when "3"
+    save_to_file
   when "9"
     exit
   else
@@ -154,6 +157,20 @@ def interactive_menu
     process(user_selection) 
 
   end
+
+end
+
+def save_to_file
+  file = File.open('students.csv', 'w')
+
+  @students.each do |student|
+    data = [student[:name], student[:cohort]]
+    csv_line = data.join(", ")
+    file.puts csv_line
+  end
+
+  file.close
+
 
 end
 
