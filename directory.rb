@@ -44,8 +44,7 @@ end
 
 def creates_ordered_list(list)
   ordered_list = []
-  cohorts = list.map { |student| student[:cohort] }.uniq
-  cohorts = cohorts.order_by_month
+  cohorts = list.map { |student| student[:cohort] }.uniq.order_by_month
   cohorts.each do |month|
     list.each { |student| ordered_list << student if student[:cohort] == month }
   end
@@ -70,10 +69,6 @@ def print_students
 end
 
 def print_beginning_with_letter(letter)
-  unless letter.instance_of? String  
-    return "Error: must recieve single letter string" 
-  end
-
   filtered = @students.select { |student| student[:name][0].downcase == letter }
   return print_students(filtered)
 
@@ -89,21 +84,25 @@ def print_footer
   puts "Overall we have #{@students.length} students at the accademy".center(100)
 end
 
+def recieve_cohort_validate_and_return
+  cohort = ""
+  until cohort.is_valid_cohort?
+    puts "Enter student cohort"
+    cohort = $stdin.gets.chomp
+    puts "Invalid" unless cohort.is_valid_cohort?
+  end
+  return cohort
+
+end
 
 def add_students
   
   while true
     puts "Enter student name"
-    student_name = gets.chomp
+    student_name = $stdin.gets.chomp
     break if student_name == 'stop'
 
-    student_cohort = String.new
-
-    until student_cohort.is_valid_cohort?
-      puts "Enter student cohort"
-      student_cohort = gets.chomp
-      puts "Invalid" unless student_cohort.is_valid_cohort?
-    end
+    student_cohort = recieve_cohort_validate_and_return
 
     student_cohort = "september" if student_cohort.empty?
 
@@ -138,13 +137,17 @@ end
 def process(user_selection)
   case user_selection
   when "1"
+    puts "Inputting Students: "
     add_students
   when "2"
+    puts "Listing Students: "
     show_students
   when "3"
+    puts "Saving to csv"
     save_to_file
   when "4"
-    load_students_from_file
+    puts "Loading from csv"
+    load_students_from_file(nil, true)
   when "9"
     exit
   else
@@ -152,12 +155,13 @@ def process(user_selection)
   end
 end
 
+
 def interactive_menu
 
   loop do
   
     print_menu()
-    user_selection = gets.chomp
+    user_selection = $stdin.gets.chomp
     process(user_selection) 
 
   end
@@ -165,6 +169,8 @@ def interactive_menu
 end
 
 def save_to_file
+  puts "enter file name: "
+  filename = $stdin.gets.chomp
   file = File.open('students.csv', 'w')
 
   @students.each do |student|
@@ -177,18 +183,44 @@ def save_to_file
 
 end
 
-def load_students_from_file
-  file = File.open("students.csv", "r")
+def load_students_from_file(filename = "students.csv", asking_for_file = false)
+  
+  if asking_for_file  
+    puts "Enter file to load from: "
+    filename = $stdin.gets.chomp
+  end
+
+  file = File.open(filename, "r")
 
   file.readlines.each do |line|
     name, cohort = line.chomp.split(', ')
     @students << { name: name, cohort: cohort.to_sym }
   end 
+
   file.close
 end
 
-# method calls
 
+def try_load_students
+  filename = ARGV.first
+
+  if filename.nil?
+    load_students_from_file 
+    return
+  end
+
+  if File.exists?(filename)
+    load_students_from_file(filename)
+    puts "#{@students.length} were added from #{filename}."
+  else
+    puts "#{filename} doesn't exist."
+  end
+
+end
+
+# method calls
+print ARGV
+try_load_students
 interactive_menu()
 
 # student_list = create_student_list
